@@ -14,33 +14,18 @@ getAllDepartment();
 getAllLocation();
 
 
-//DOM
-let search = document.querySelector('#searchInp');
-let searchListItems = document.querySelector('tr');
-
-const searchFilter = (searchName) => {
-  console.log(Array.from(searchListItems.children));
-}
-
 //**************************  Search Input  ***********************************************
 $("#searchInp").on("keyup", function () {
-    let searchName = search.value.trim();
-    searchFilter(searchName);
-
-// w3 example
-
-    // $(document).ready(function(){
-    //   $("#myInput").on("keyup", function() {
-    //     var value = $(this).val().toLowerCase();
-    //     $("#myTable tr").filter(function() {
-    //       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    //     });
-    //   });
-    // });
-
-    
-  });
-  
+       var value = $(this).val().toLowerCase();
+        $(".search tr").filter(function() {
+          if($(this).text().search(new RegExp(value, "i"))<0){
+            $(this).fadeOut();
+          }else{
+            $(this).show();
+          }
+        })
+        });
+      
 //****************************  Refresh-Button  *********************************************
   $("#refreshBtn").click(function () {
     if ($("#personnelBtn").hasClass("active")) {
@@ -108,8 +93,7 @@ function getAllPersonnel(){
           all_id = ($(this).data('id'));
           console.log($(this).data('id'));
 
-          // $('#deletePersonnel').data('id', $(this).data('id'));
-          $('#deletePersonnel').data('id', all_id);
+          $('#deletePersonnel').data('id', $(this).data('id'));
          
         });
           }
@@ -712,9 +696,6 @@ $("#deleteLocationtBtn").on("show.bs.modal", function (e) {
 
 $("#deleteLocation").click(function(){
     console.log($(this).data('id'));
-
-    $('#deletePersonnelWithId').append(`${this.data('id')}`);
-    // $('deletePersonnelWithId').html(`${this.data('id')}`);
 
       $('#deleteConfirm').html(`${$('#deleteLocation').html()}`);
         $(`#deleteLocation`).on('click', event => {
