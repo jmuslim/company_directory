@@ -290,47 +290,11 @@ function getAllLocation(){
       }) 
       });
 
-// ***************************** Delete Personnel Modal************************************
-let personnelIdDeleted = document.querySelector('#deletePersonnelWithId');
-
-$("#deletePersonnelBtn").on("show.bs.modal", function (e) {
-  console.log($(e.relatedTarget).attr("data-id"));
-  // $('deletePersonnelWithId').html(`${this.data('id')}`);
-
-});
-
-$("#deletePersonnel").click(function(){
-    console.log($(this).data('id'));
-
-    // $('#deletePersonnelWithId').append(`${this.data('id')}`);
-    // $('deletePersonnelWithId').html(`${this.data('id')}`);
-
-      $('#deleteConfirm').html(`${$('#addpersonnel').html()}`);
-        $(`#deletePersonnel`).on('click', event => {
-  // write delete personnel ajax request using $(this).data('id') as the personnel id
-          $.ajax({
-            type: 'POST',
-            url: "libs/php/deletePersonnelByID.php",
-            data: {
-              id: $(this).data('id'),
-            },
-            dataType: 'json',
-            success: function(results) {
-              console.log(results);
-              location.reload();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }
-          });
-        })
-});
-
 // ***************************** Adding Personnel Modal************************************
 
 $("#addPersonnelModal").on("show.bs.modal", function (e) {
   $.ajax({
-    url:"libs/php/insertPersonnel.php",
+    url:"libs/php/getPersonnelByID.php",
     type: "POST",
     dataType: "json",
     data:{
@@ -340,13 +304,12 @@ $("#addPersonnelModal").on("show.bs.modal", function (e) {
       jobTitle: $("#editPersonnelJobTitle").val(),
       departmentID: $("#editPersonnelDepartment").val(),
       locationID: $('#editPersonnelLocation').val(),
-      // id: $(e.relatedTarget).attr("data-id") // Retrieves the data-id attribute from the calling button
     },
     success: function (result) {
       var resultCode = result.status.code;
 
       if (resultCode == 200) {
-      console.log(result);
+      // console.log(result);
       }
 
     },
@@ -394,7 +357,6 @@ $.ajax({
 }
 });
 
-
 //***************************** Submit Adding Personnel ************************************
 $("#addPersonnelForm").on("submit", function (e) {
   e.preventDefault();
@@ -412,8 +374,7 @@ $("#addPersonnelForm").on("submit", function (e) {
     },
     dataType: 'json',
     success: function(results) {
-      console.log(results);
-      //location.reload();
+      location.reload();
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.log(jqXHR);
@@ -422,7 +383,34 @@ $("#addPersonnelForm").on("submit", function (e) {
 }) 
 });
 
+// ***************************** Delete Personnel Modal************************************
 
+$("#deletePersonnelBtn").on("show.bs.modal", function (e) {
+  let id = $(e.relatedTarget).attr("data-id");
+  let modal = $('.deletePersonnelBody');
+  modal.show('.deletePersonnelBody').html(`<h6>Are you sure you want to delete personnel id: </h6> <strong> ${id} ?</strong>`);
+
+});
+
+$("#deletePersonnel").click(function(){
+    console.log($(this).data('id'));
+  // write delete personnel ajax request using $(this).data('id') as the personnel id
+          $.ajax({
+            type: 'POST',
+            url: "libs/php/deletePersonnelByID.php",
+            data: {
+              id: $(this).data('id'),
+            },
+            dataType: 'json',
+            success: function(results) {
+              console.log(results);
+              location.reload();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+          });
+        })
 
 
 
@@ -545,12 +533,12 @@ $("#addDepartmentForm").on("submit", function (e) {
 
 // ***************************** Delete Department ************************************
 $("#deleteDepartmentBtn").on("show.bs.modal", function (e) {
-  console.log($(e.relatedTarget).attr("data-id"));
+  let id = $(e.relatedTarget).attr("data-id");
+  let modal = $('.depeartmentDeleteBody');
+  modal.show('.depeartmentDeleteBody').html("<h6>Are you sure you want to delete location id: </h6> <strong>" + id + " ?</strong>");
 
 $("#deleteDepartment").click(function(){
     console.log($(this).data('id'));
-
-        $(`#deleteDepartment`).on('click', event => {
   // write delete personnel ajax request using $(this).data('id') as the personnel id
           $.ajax({
             type: 'POST',
@@ -568,7 +556,6 @@ $("#deleteDepartment").click(function(){
             }
           });
         })
-});
 });
 
 
@@ -691,14 +678,14 @@ $("#addLocationForm").on("submit", function (e) {
 
 // ***************************** Delete Location************************************
 $("#deleteLocationtBtn").on("show.bs.modal", function (e) {
-  console.log($(e.relatedTarget).attr("data-id"));
+  let id = $(e.relatedTarget).attr("data-id");
+  let modal = $('.locationBody');
+  modal.show('.locationBody').html("<h6>Are you sure you want to delete location id: </h6> <strong>" + id + " ?</strong>");
 });
 
 $("#deleteLocation").click(function(){
     console.log($(this).data('id'));
 
-      $('#deleteConfirm').html(`${$('#deleteLocation').html()}`);
-        $(`#deleteLocation`).on('click', event => {
   // write delete personnel ajax request using $(this).data('id') as the personnel id
           $.ajax({
             type: 'POST',
@@ -716,7 +703,6 @@ $("#deleteLocation").click(function(){
             }
           });
         })
-});
 
 
 
