@@ -49,33 +49,33 @@ function getAllPersonnel(){
         data: {},
         dataType: 'json',
         success: function(allResults) {
-        console.log("All Employees Data:", allResults)
+        // console.log("All Employees Data:", allResults)
 				if (allResults.status.name == "ok") {
 
         let personnelData = allResults.data;
         for (const employee of personnelData) {
           $('#tableBody').append(
             `<tr>
-            <td class="align-middle text-nowrap d-none d-md-table-cell">
+            <td class="align-middle text-nowrap">
                 <label for="lastName" class=" col-form-label">${employee.lastName} </label> 
             </td>
-            <td class="align-middle text-nowrap d-none d-md-table-cell">
+            <td class="align-middle text-nowrap d-md-table-cell">
                 <label for="firstName" class= "col form-label">${employee.firstName} </label> 
             </td>
-            <td class="align-middle text-nowrap d-none d-md-table-cell">
+            <td class="align-middle text-nowrap d-sm-none d-sm-block d-md-table-cell">
                 <label for="email" class=" col-form-label">${employee.email}</label>
             </td>
-            <td class="align-middle text-nowrap d-none d-md-table-cell">
+            <td class="align-middle text-nowrap d-sm-none d-sm-block d-md-table-cell">
                 <label for="jobTitle" class="col-form-label" >${employee.jobTitle} </label> 
             </td>
-            <td class="align-middle text-nowrap d-none d-md-table-cell">
+            <td class="align-middle text-nowrap d-sm-none d-sm-block d-md-table-cell">
                 <label for="department" class="col form-label" >${employee.department}</label>
             </td>
-            <td class="align-middle text-nowrap d-none d-md-table-cell">
+            <td class="align-middle text-nowrap d-sm-none d-sm-block d-md-table-cell">
                 <label for="location" class="col form-label">${employee.location}</label>
             </td>
 
-            <td class="text-end text-nowrap action">
+            <td class="text-nowrap">
                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editPersonnelModal" data-id="${employee.id}">
                     <i class="fas fa-user-plus"></i><br>
                     edit
@@ -91,7 +91,7 @@ function getAllPersonnel(){
 
          $("[data-bs-target='#deletePersonnelBtn']").click(function (e) {
           all_id = ($(this).data('id'));
-          console.log($(this).data('id'));
+          // console.log($(this).data('id'));
 
           $('#deletePersonnel').data('id', $(this).data('id'));
          
@@ -124,15 +124,15 @@ function getAllDepartment(){
             <td class="align-middle text-nowrap">
                 <label for="newDepartment" class=" col-form-label">${depertment.name}</label> 
             </td>
-            <td class="align-middle text-nowrap d-none d-md-table-cell">
+            <td class="align-middle text-nowrap d-md-table-cell">
                 <label for="newLocation" class=" col-form-label">${depertment.location}</label> 
             </td>
-            <td class="align-middle text-end text-nowrap">
+            <td class="align-middle text-nowrap">
                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentBtn" data-id="${depertment.id}">
                     <i class="fas fa-building fa-lg fa-fw"></i><br>
                     edit
               </button>
-                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#deleteDepartmentBtn" data-id="${depertment.id}">
+                <button type="button" class="btn btn-warning btn-sm delete_department_modal" data-id="${depertment.id}">
                     <i class="fas fa-trash"></i><br>
                 delete
               </button>
@@ -141,13 +141,31 @@ function getAllDepartment(){
           );
          }
 
-         $("[data-bs-target='#deleteDepartmentBtn']").click(function (e) {
-          console.log($(this).data('id'));
+         $('.delete_department_modal').click(function(){
+          // console.log($(this).data('id'));
 
           $('#deleteDepartment').data('id', $(this).data('id'));
-        });
-
-
+          $.ajax({
+            type: 'POST',
+            url:'libs/php/deleteConfirmation.php',
+            data:{id:$(this).data('id')},
+            dataType: 'json',
+            success: function(results) {
+              // console.log(results)
+              if(results.data.numEmployees > 0){
+                // show warning modal, cannot delete department
+                $('#deleteDepartmentBtn').modal('show');
+                $('#deleteDepartment').hide();
+                $('#depeartmentDeleteBody').html(`You're not authorize to delete department <strong>${results.data.name}</strong> with id : <strong>${results.data.numEmployees}</strong>.`);
+              }else{
+                // show normal deleteDepartmentBtn modal, delete confirmation modal
+                $('#deleteDepartmentBtn').modal('show');
+              }
+            },error:function(err){
+              console.log(err);
+            }
+          })
+         });
           }
         },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -171,17 +189,16 @@ function getAllLocation(){
          for (const location of locData) {
           $('#locBody').append(
             ` <tr>
-            <td class="align-middle text-nowrap d-none d-md-table-cell">
+            <td class="align-middle text-nowrap d-md-table-cell">
                 <label for="newLocation" class=" col-form-label">${location.location}</label> 
             </td>
-            <td class="align-middle text-end text-nowrap">
+            <td class="align-middle text-center text-nowrap">
                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" 
                 data-bs-target="#editLocationBtn" data-id="${location.id}">
                 <i class="fas fa-building fa-lg fa-fw"></i><br>
                 edit
               </button>
-                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" 
-                data-bs-target="#deleteLocationtBtn" data-id="${location.id}">
+                <button type="button" class="btn btn-warning btn-sm delete_location_modal"  data-id="${location.id}">
                 <i class="fas fa-trash"></i><br>
                 delete
               </button>
@@ -190,12 +207,34 @@ function getAllLocation(){
           );
          }
 
-         $("[data-bs-target='#deleteLocationtBtn']").click(function (e) {
-          console.log($(this).data('id'));
+
+         $('.delete_location_modal').click(function(){
+          // console.log($(this).data('id'));
+
           $('#deleteLocation').data('id', $(this).data('id'));
-        });
+          $.ajax({
+            type: 'POST',
+            url:'libs/php/deleteConfirmationLocation.php',
+            data:{id:$(this).data('id')},
+            dataType: 'json',
+            success: function(results) {
+              // console.log(results)
+              if(results.data.numdept > 0){
+                // show warning modal, cannot delete location
+                $('#deleteLocationtBtn').modal('show');
+                $('#deleteLocation').hide();
+                $('#locationBody').html(`You're not authorize to delete location <strong>${results.data.name}</strong> and id number : <strong>${results.data.numdept}</strong>.`);
+              }else{
+                // show normal deleteDepartmentBtn modal, delete confirmation modal
+                $('#deleteLocationtBtn').modal('show');
 
+              }
+            },error:function(err){
+              console.log(err);
+            }
 
+          })
+         });
           }
         },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -281,8 +320,8 @@ function getAllLocation(){
 
           dataType: 'json',
           success: function(results) {
-            console.log(results);
-            location.reload();
+            // console.log(results);
+            // location.reload();
           },
           error: function(jqXHR, textStatus, errorThrown) {
               console.log(errorThrown);
@@ -330,7 +369,7 @@ $.ajax({
   success: function(deptResults) {
     // console.log("Location Data:", locResults)
     if (deptResults.status.name == "ok") {
-      console.log(deptResults)
+    //   console.log(deptResults)
       
       for (const department of deptResults.data) {
         $('#addPersonnelDepartment').append(`<option value='${department.id}'>${department.name}</option>`);
@@ -348,7 +387,7 @@ $.ajax({
   success: function(locResults) {
     // console.log("Location Data:", locResults)
     if (locResults.status.name == "ok") {
-    console.log(locResults)
+    // console.log(locResults)
 
     for (const location of locResults.data) {
       $('#addPersonnelLocation').append(`<option value='${location.id}'>${location.location}</option>`);
@@ -374,7 +413,7 @@ $("#addPersonnelForm").on("submit", function (e) {
     },
     dataType: 'json',
     success: function(results) {
-      location.reload();
+    //   location.reload();
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.log(jqXHR);
@@ -393,7 +432,7 @@ $("#deletePersonnelBtn").on("show.bs.modal", function (e) {
 });
 
 $("#deletePersonnel").click(function(){
-    console.log($(this).data('id'));
+    // console.log($(this).data('id'));
   // write delete personnel ajax request using $(this).data('id') as the personnel id
           $.ajax({
             type: 'POST',
@@ -403,8 +442,8 @@ $("#deletePersonnel").click(function(){
             },
             dataType: 'json',
             success: function(results) {
-              console.log(results);
-              location.reload();
+              // console.log(results);
+            //   location.reload();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
@@ -425,7 +464,7 @@ $("#editDepartmentBtn").on("show.bs.modal", function (e) {
       id : $(e.relatedTarget).attr("data-id"),
     },
     success: function (result) {
-      console.log(result);
+      // console.log(result);
 
       let resultCode = result.status.code;
       if (resultCode == 200) {
@@ -474,8 +513,8 @@ $("#editDepartmentForm").on("submit", function (e) {
 
     dataType: 'json',
     success: function(results) {
-      console.log(results);
-      location.reload();
+      // console.log(results);
+    //   location.reload();
     },
     error: function(jqXHR, textStatus, errorThrown) {
         console.log(errorThrown);
@@ -496,7 +535,7 @@ $("#addDepartment").on("show.bs.modal", function (e) {
     },
     success: function (result) {
       var resultCode = result.status.code;
-      console.log(result);
+      // console.log(result);
 
       if (resultCode == 200) {
       }
@@ -522,7 +561,7 @@ $("#addDepartmentForm").on("submit", function (e) {
     },
     dataType: 'json',
     success: function(results) {
-      location.reload();
+    //   location.reload();
     },
     error: function(jqXHR, textStatus, errorThrown) {
         console.log(errorThrown);
@@ -532,13 +571,8 @@ $("#addDepartmentForm").on("submit", function (e) {
 
 
 // ***************************** Delete Department ************************************
-$("#deleteDepartmentBtn").on("show.bs.modal", function (e) {
-  let id = $(e.relatedTarget).attr("data-id");
-  let modal = $('.depeartmentDeleteBody');
-  modal.show('.depeartmentDeleteBody').html("<h6>Are you sure you want to delete location id: </h6> <strong>" + id + " ?</strong>");
-
 $("#deleteDepartment").click(function(){
-    console.log($(this).data('id'));
+    // console.log($(this).data('id'));
   // write delete personnel ajax request using $(this).data('id') as the personnel id
           $.ajax({
             type: 'POST',
@@ -548,15 +582,14 @@ $("#deleteDepartment").click(function(){
             },
             dataType: 'json',
             success: function(results) {
-              console.log(results);
-              location.reload();
+              // console.log(results);
+            //   location.reload();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
             }
           });
         })
-});
 
 
 
@@ -573,7 +606,7 @@ $("#editLocationBtn").on("show.bs.modal", function (e) {
       id : $(e.relatedTarget).attr("data-id"),
     },
     success: function (result) {
-      console.log(result);
+      // console.log(result);
 
       let resultCode = result.status.code;
       if (resultCode == 200) {
@@ -622,8 +655,8 @@ $("#editLocationForm").on("submit", function (e) {
 
     dataType: 'json',
     success: function(results) {
-      console.log(results);
-      location.reload();
+      // console.log(results);
+    //   location.reload();
     },
     error: function(jqXHR, textStatus, errorThrown) {
         console.log(errorThrown);
@@ -642,7 +675,7 @@ $("#addLocation").on("show.bs.modal", function (e) {
     },
     success: function (result) {
       var resultCode = result.status.code;
-      console.log(result);
+      // console.log(result);
 
       if (resultCode == 200) {
       }
@@ -667,7 +700,7 @@ $("#addLocationForm").on("submit", function (e) {
     },
     dataType: 'json',
     success: function(results) {
-      location.reload();
+    //   location.reload();
     },
     error: function(jqXHR, textStatus, errorThrown) {
         console.log(errorThrown);
@@ -679,12 +712,18 @@ $("#addLocationForm").on("submit", function (e) {
 // ***************************** Delete Location************************************
 $("#deleteLocationtBtn").on("show.bs.modal", function (e) {
   let id = $(e.relatedTarget).attr("data-id");
-  let modal = $('.locationBody');
-  modal.show('.locationBody').html("<h6>Are you sure you want to delete location id: </h6> <strong>" + id + " ?</strong>");
+
+  if ( id <= 0){
+    $("#locationBody").show();
+} else {
+    $("#deleteLocation").hide();
+    $("#locationBody").html(`<h6>You're not authorize to delete this location id:</h6> <strong>${id}</strong>.`);
+    $("#deleteLocation").attr("locationID", id);
+}
 });
 
 $("#deleteLocation").click(function(){
-    console.log($(this).data('id'));
+    // console.log($(this).data('id'));
 
   // write delete personnel ajax request using $(this).data('id') as the personnel id
           $.ajax({
@@ -695,8 +734,8 @@ $("#deleteLocation").click(function(){
             },
             dataType: 'json',
             success: function(results) {
-              console.log(results);
-              location.reload();
+              // console.log(results);
+            //   location.reload();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
