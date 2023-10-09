@@ -6,7 +6,7 @@
 	$executionStartTime = microtime(true);
 
 	include("config.php");
-	include("configHostinger.php");
+	// include("configHostinger.php");
 
 
 	header('Content-Type: application/json; charset=UTF-8');
@@ -31,9 +31,10 @@
 
 	// first query - SQL statement accepts parameters and so is prepared to avoid SQL injection.
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
+	$query = $conn->prepare('SELECT `id`, `name`, `locationID` FROM `department` WHERE `id` = ?');
 	
 
-	$query = $conn->prepare('SELECT id, name, locationID FROM department WHERE id =  ?');
+	// $query = $conn->prepare('SELECT id, name, locationID FROM department WHERE id =  ?');
 
 	$query->bind_param("i", $_REQUEST['id']);
 

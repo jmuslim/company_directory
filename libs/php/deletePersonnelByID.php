@@ -12,7 +12,7 @@
 	$executionStartTime = microtime(true);
 
 	include("config.php");
-	include("configHostinger.php");
+	// include("configHostinger.php");
 
 
 	header('Content-Type: application/json; charset=UTF-8');

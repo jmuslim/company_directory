@@ -8,7 +8,7 @@
     $executionStartTime = microtime(true);
 
     include("config.php");
-	include("configHostinger.php");
+	// include("configHostinger.php");
 
 
     $conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);

@@ -25,5 +25,8 @@ tr {
   width: 70px;
 }
 .staff, .building, .map{
-  color: #ffc107;
+  color: #a62222;
+}
+.color{
+  color: #f42b2b;
 }
