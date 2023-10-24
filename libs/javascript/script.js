@@ -36,7 +36,11 @@ $("#searchInp").on("keyup", function () {
         var id = $(this).val();
         // console.log(id);
         // set location filter to all locations and trigger change event
-        $('#filterLocations').val(0).change();
+        // $('#filterLocations').val(0).change();
+        if($('#filterLocations').val() != 0){
+          $('#filterLocations').val(0).change();
+
+        }
         // make ajax request to get filtered personnel only
         $.ajax({
           type: 'GET',
@@ -100,8 +104,11 @@ $("#searchInp").on("keyup", function () {
         var id = $(this).val();
         // console.log(id);
         // set location filter to all locations and trigger change event
-        $('#filterDepartments').val(0).change();
+        // $('#filterDepartments').val(0).change();
+        if($('#filterDepartments').val() != 0){
+          $('#filterDepartments').val(0).change();
 
+        }
         // make ajax request to get filtered personnel only
         $.ajax({
           type: 'GET',
