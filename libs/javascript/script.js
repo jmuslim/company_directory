@@ -17,7 +17,7 @@ getAllLocation();
 //**************************  Search Input  ***********************************************
 $("#searchInp").on("keyup", function () {
        var value = $(this).val().toLowerCase();
-       console.log(value);
+      //  console.log(value);
         $(".search tr").filter(function() {
           if($(this).text().search(new RegExp(value, "i"))<0){
             $(this).fadeOut();
@@ -27,21 +27,136 @@ $("#searchInp").on("keyup", function () {
         })
         });
       
-// //****************************  Filter-Button  *********************************************
+// //****************************  Filtering  *********************************************
       $("#filterBtn").click(function () {
         // Open a modal of your own design that allows the user to apply a filter to the personnel table on either department or location
-        $("#dep_Id").click(function () {
-          const value = $(this).val();
-            for (let i = 0; i < value.length; i++) {
-              if($(this).filter($(this).text().toLowerCase().indexOf(value))>0){
-                // if($(this).filter(new RegExp(value, "i"))>0){
-                  console.log(value, 'hi');
-                }
-              }
-              return false;
-            })
-            //show the rows that match.
+      })
+// ***********************************Department Filter*******************************************
+      $('#filterDepartments').change(function(){
+        var id = $(this).val();
+        // console.log(id);
+        // set location filter to all locations and trigger change event
+        $('#filterLocations').val(0).change();
+        // make ajax request to get filtered personnel only
+        $.ajax({
+          type: 'GET',
+          url: "libs/php/filter_department.php",
+          data: {departmentID:id},
+          dataType: 'json',
+          success: function(allResults) {
+          // console.log("All Employees Data:", allResults)
+          if (allResults.status.name == "ok") {
+  
+          let personnelData = allResults.data;
+          $("#tableBody").html("");
+          for (const employee of personnelData) {
+            $('#tableBody').append(
+              `<tr>
+              <td class="align-middle text-nowrap">
+                  <label for="lastName" class=" col-form-label">${employee.lastName} </label> 
+              </td>
+              <td class="align-middle text-nowrap d-md-table-cell">
+                  <label for="firstName" class= "col form-label">${employee.firstName} </label> 
+              </td>
+              <td class="align-middle text-nowrap d-sm-none  d-md-table-cell">
+                  <label for="email" class=" col-form-label">${employee.email}</label>
+              </td>
+              <td class="align-middle text-nowrap d-sm-none  d-md-table-cell">
+                  <label for="jobTitle" class="col-form-label" >${employee.jobTitle} </label> 
+              </td>
+              <td class="align-middle text-nowrap d-sm-none d-md-table-cell">
+                  <label for="department" class="col form-label" >${employee.department}</label>
+              </td>
+             
+  
+              <td class="text-nowrap">
+                  <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editPersonnelModal" data-id="${employee.id}">
+                      <i class="fas fa-user-plus"></i>
+                </button>
+                  <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#deletePersonnelBtn" data-id="${employee.id}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>`
+            );
+          }
+  
+           $("[data-bs-target='#deletePersonnelBtn']").click(function (e) {
+            all_id = ($(this).data('id'));
+            // console.log($(this).data('id'));
+            $('#deletePersonnel').data('id', $(this).data('id'));
+           
           });
+            }
+          },
+              error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+        }
+      });
+      });
+
+// ***********************************Location Filter*******************************************
+      $('#filterLocations').change(function(){
+        var id = $(this).val();
+        // console.log(id);
+        // set location filter to all locations and trigger change event
+        $('#filterDepartments').val(0).change();
+
+        // make ajax request to get filtered personnel only
+        $.ajax({
+          type: 'GET',
+          url: "libs/php/filter_location.php",
+          data: {locationID:id},
+          dataType: 'json',
+          success: function(allResults) {
+          // console.log("All Employees Data:", allResults)
+          if (allResults.status.name == "ok") {
+  
+          let personnelData = allResults.data;
+          $("#tableBody").html("");
+          for (const employee of personnelData) {
+            $('#tableBody').append(
+              `<tr>
+              <td class="align-middle text-nowrap">
+                  <label for="lastName" class=" col-form-label">${employee.lastName} </label> 
+              </td>
+              <td class="align-middle text-nowrap d-md-table-cell">
+                  <label for="firstName" class= "col form-label">${employee.firstName} </label> 
+              </td>
+              <td class="align-middle text-nowrap d-sm-none  d-md-table-cell">
+                  <label for="email" class=" col-form-label">${employee.email}</label>
+              </td>
+              <td class="align-middle text-nowrap d-sm-none  d-md-table-cell">
+                  <label for="jobTitle" class="col-form-label" >${employee.jobTitle} </label> 
+              </td>
+              <td class="align-middle text-nowrap d-sm-none d-md-table-cell">
+                  <label for="department" class="col form-label" >${employee.department}</label>
+              </td>
+             
+  
+              <td class="text-nowrap">
+                  <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editPersonnelModal" data-id="${employee.id}">
+                      <i class="fas fa-user-plus"></i>
+                </button>
+                  <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#deletePersonnelBtn" data-id="${employee.id}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>`
+            );
+          }
+           $("[data-bs-target='#deletePersonnelBtn']").click(function (e) {
+            all_id = ($(this).data('id'));
+            // console.log($(this).data('id'));
+            $('#deletePersonnel').data('id', $(this).data('id'));
+          });
+            }
+          },
+              error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+        }
+      });
+      });
 
 
 //****************************  Refresh-Button  *********************************************
@@ -58,10 +173,6 @@ $("#searchInp").on("keyup", function () {
         getAllLocation();
       }
     });
-
-
-
-
 
   
   $("#refreshBtn").click(function () {
@@ -191,6 +302,8 @@ function getAllDepartment(){
             </td>
           </tr>`
           );
+
+          $('#filterDepartments').append(`<option value='${depertment.id}'>${depertment.name}</option>`);
          }
 
          $('.delete_department_modal').click(function(){
@@ -261,6 +374,7 @@ function getAllLocation(){
             </td>
           </tr>`
           );
+          $('#filterLocations').append(`<option value='${location.id}'>${location.location}</option>`);
          }
 
 
@@ -289,13 +403,10 @@ function getAllLocation(){
                 $('#deleteLocation').show();
                 $('#assignLocation').hide();
                 $('#locationBody').show();
-
-
               }
             },error:function(err){
               console.log(err);
             }
-
           })
          });
           }
@@ -318,7 +429,7 @@ function getAllLocation(){
         id: $(e.relatedTarget).attr("data-id") // Retrieves the data-id attribute from the calling button
       },
       success: function (result) {
-        console.log(result);
+        // console.log(result);
 
         var resultCode = result.status.code;
 
@@ -407,12 +518,12 @@ $.ajax({
       // console.log(deptResults)
       for (const department of deptResults.data) {
         $('#addPersonnelDepartment').append(`<option value='${department.id}'>${department.name}</option>`);
-        $('#department_filter').append(
-                      `<li>
-                        <a class="dropdown-item" id="dept_Id" href="#">${department.name}</a>
-                      </li>
-                      `
-        )
+        // // $('#department_filter').append(
+        // //               `<li>
+        // //                 <a class="dropdown-item" id="dept_Id" href="#">${department.name}</a>
+        // //               </li>
+        // //               `
+        // )
       }
     }
   }
@@ -433,12 +544,12 @@ $.ajax({
       $('#addDeptLocationName').append(`<option value='${location.id}'>${location.location}</option>`);
       $('#editDeptLocationName').append(`<option value='${location.id}'>${location.location}</option>`);
       /// Addes location on selete filter 
-      $('#location_filter').append(
-        `<li>
-            <a class="dropdown-item" id="loc_Id" href="#">${location.location}</a>
-          </li>
-          `
-)
+//       $('#location_filter').append(
+//         `<li>
+//             <a class="dropdown-item" id="loc_Id" href="#">${location.location}</a>
+//           </li>
+//           `
+// )
     }
   }
 }

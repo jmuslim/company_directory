@@ -49,26 +49,13 @@
         <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="dropdown text-center filter">
-          <button class="btn btn-warning dropdown-toggle"  type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Selects
-          </button>
-          <ul class="dropdown-menu">
-            <li>
-              <button class="btn btn-warning dropdown-toggle mb-3 m-2 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Select department
-              </button>
-              <ul class="dropdown-menu dropdown-submenu" id="department_filter">
-              </ul>
-            </li>
-            <li>
-              <button class="btn btn-warning dropdown-toggle m-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Select location
-              </button>
-              <ul class="dropdown-menu dropdown-submenu" id="location_filter"></ul>
-            </li>
-          </ul>
-          </div>
+        <select id='filterDepartments' class="form-select mb-2">
+          <option value="0">All Departments</option>
+        </select>
+
+        <select id="filterLocations" class="form-select">
+          <option value="0">All Locations</option>
+        </select>
       </div>
       <div class="modal-footer">
       </div>
