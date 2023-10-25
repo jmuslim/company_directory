@@ -30,9 +30,14 @@
 	}	
 
 	// SQL does not accept parameters and so is not prepared
-    // $query = 'SELECT l.id as id, l.name as location, COUNT(d.name) as departments FROM department d RIGHT JOIN location l ON l.id = d.locationID GROUP BY location';
+	if ($_REQUEST['locationID'] == 0) {
+		# code...
+        $query = $conn->prepare('INSERT INTO location (name) VALUES(?)');
+	}else{
+        // $query = 'SELECT l.id as id, l.name as location WHERE l.id='.$_REQUEST['locationID'];
+		$query = 'SELECT l.name as location where l.id='.$_REQUEST['locationID'];
+	}
 
-	$query = 'SELECT l.id as id, l.name as location FROM department d RIGHT JOIN location l ON l.id = d.locationID ORDER BY l.name';
 
 	$result = $conn->query($query);
 	

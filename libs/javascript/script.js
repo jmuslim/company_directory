@@ -182,7 +182,7 @@ $("#searchInp").on("keyup", function () {
     });
 
   
-  $("#refreshBtn").click(function () {
+  $("#addBtn").click(function () {
     // Replicate the logic of the refresh button click to open the add modal for the table that is currently on display
     if ($("#personnelBtn").hasClass("active")) {
       // open add personnel modal e.g $('#addPersonnelModal').modal('show')
@@ -894,5 +894,28 @@ $("#deleteLocation").click(function(){
           });
         })
 
+// Remove Duplicate 
+$(document).ready(function(){
+  $('#addNewLocation').keyup(function(e){
+    let newLocation = $('#addNewLocation').val();
+    console.log(newLocation);
 
+    $.ajax({
+      type: 'POST',
+      url: "libs/php/remove_duplicate_location.php",
+      data: {
+        // id: $(this).data('id'),
+        data: {locationID},
+      // locationID: $("#addLocationId").val(),
+      },
+      dataType: 'json',
+      success: function(results) {
+        console.log(results)
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+          console.log(errorThrown);
+      }
+  }) 
 
+  });
+});
