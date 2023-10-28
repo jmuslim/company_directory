@@ -32,7 +32,7 @@
 	// SQL does not accept parameters and so is not prepared
     // $query = 'SELECT l.id as id, l.name as location, COUNT(d.name) as departments FROM department d RIGHT JOIN location l ON l.id = d.locationID GROUP BY location';
 
-	$query = 'SELECT l.id as id, l.name as location FROM department d RIGHT JOIN location l ON l.id = d.locationID ORDER BY l.name';
+	$query = 'SELECT id, name FROM location ORDER BY name';
 
 	$result = $conn->query($query);
 	

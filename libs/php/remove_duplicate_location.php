@@ -30,18 +30,20 @@
 	}	
 
 	// SQL does not accept parameters and so is not prepared
-	if ($_REQUEST['locationID'] == 0) {
 		# code...
-        $query = $conn->prepare('INSERT INTO location (name) VALUES(?)');
-	}else{
-        // $query = 'SELECT l.id as id, l.name as location WHERE l.id='.$_REQUEST['locationID'];
-		$query = 'SELECT l.name as location where l.id='.$_REQUEST['locationID'];
-	}
+	$query = $conn->prepare('SELECT id,name FROM location where name = ?');
+
+	$query->bind_param("s", $_REQUEST['name']);
+
+	$query->execute();
+	// $query = 'SELECT id, LOWER(name) FROM location where LOWER(name)='.$_REQUEST['name'];
+
+	// $query->bind_param("s", $_REQUEST['name']);
 
 
-	$result = $conn->query($query);
 	
-	if (!$result) {
+	
+	if (false == $query) {
 
 		$output['status']['code'] = "400";
 		$output['status']['name'] = "executed";
@@ -56,19 +58,21 @@
 
 	}
    
-   	$data = [];
+	$result = $query->get_result();
 
-	while ($row = mysqli_fetch_assoc($result)) {
+	$location = [];
 
-		array_push($data, $row);
+ 	while ($row = mysqli_fetch_assoc($result)) {
 
-	}
+	 array_push($location, $row);
+
+ 	}
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
 	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = $data;
+	$output['data'] = $location;
 	
 	mysqli_close($conn);
 

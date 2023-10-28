@@ -30,13 +30,13 @@ $("#searchInp").on("keyup", function () {
 // //****************************  Filtering  *********************************************
       $("#filterBtn").click(function () {
         // Open a modal of your own design that allows the user to apply a filter to the personnel table on either department or location
-      })
+      });
+
 // ***********************************Department Filter*******************************************
       $('#filterDepartments').change(function(){
         var id = $(this).val();
         // console.log(id);
         // set location filter to all locations and trigger change event
-        // $('#filterLocations').val(0).change();
         if($('#filterLocations').val() != 0){
           $('#filterLocations').val(0).change();
 
@@ -71,8 +71,6 @@ $("#searchInp").on("keyup", function () {
               <td class="align-middle text-nowrap d-sm-none d-md-table-cell">
                   <label for="department" class="col form-label" >${employee.department}</label>
               </td>
-             
-  
               <td class="text-nowrap">
                   <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editPersonnelModal" data-id="${employee.id}">
                       <i class="fas fa-user-plus"></i>
@@ -364,11 +362,12 @@ function getAllLocation(){
 				if (locResults.status.name == "ok") {
 
         let locData = locResults.data;
+        $('#locBody').html('');
          for (const location of locData) {
           $('#locBody').append(
             ` <tr>
             <td class="align-middle text-nowrap d-md-table-cell">
-                <label for="newLocation" class=" col-form-label">${location.location}</label> 
+                <label for="newLocation" class=" col-form-label">${location.name}</label> 
             </td>
             <td class="align-middle text-end text-nowrap">
                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" 
@@ -381,7 +380,7 @@ function getAllLocation(){
             </td>
           </tr>`
           );
-          $('#filterLocations').append(`<option value='${location.id}'>${location.location}</option>`);
+          $('#filterLocations').append(`<option value='${location.id}'>${location.name}</option>`);
          }
 
 
@@ -525,12 +524,6 @@ $.ajax({
       // console.log(deptResults)
       for (const department of deptResults.data) {
         $('#addPersonnelDepartment').append(`<option value='${department.id}'>${department.name}</option>`);
-        // // $('#department_filter').append(
-        // //               `<li>
-        // //                 <a class="dropdown-item" id="dept_Id" href="#">${department.name}</a>
-        // //               </li>
-        // //               `
-        // )
       }
     }
   }
@@ -548,15 +541,8 @@ $.ajax({
     // console.log(locResults)
 
     for (const location of locResults.data) {
-      $('#addDeptLocationName').append(`<option value='${location.id}'>${location.location}</option>`);
-      $('#editDeptLocationName').append(`<option value='${location.id}'>${location.location}</option>`);
-      /// Addes location on selete filter 
-//       $('#location_filter').append(
-//         `<li>
-//             <a class="dropdown-item" id="loc_Id" href="#">${location.location}</a>
-//           </li>
-//           `
-// )
+      $('#addDeptLocationName').append(`<option value='${location.id}'>${location.name}</option>`);
+      $('#editDeptLocationName').append(`<option value='${location.id}'>${location.name}</option>`);
     }
   }
 }
@@ -843,22 +829,46 @@ $("#editLocationForm").on("submit", function (e) {
 $("#addLocationForm").on("submit", function (e) {
   e.preventDefault();
   // AJAX call to save form data
+
   $.ajax({
     type: 'POST',
-    url: "libs/php/insertLocation.php",
+    url: "libs/php/remove_duplicate_location.php",
     data: {
-      name: $("#addNewLocation").val(),
+    name: $("#addNewLocation").val(),
     },
     dataType: 'json',
-    success: function(results) {
-      $("#locBody").html(""); 
-      getAllLocation();
+    success: function(results1) {
+      // console.log(results1)
+      if(results1.data.length > 0){
+          $('#addLocationModal').modal('hide');
+          $('#showLocationMessage').modal('show');
+          $('#locationMessage').show();
+        // alert('This location has already been added')
+      }else{
+        $.ajax({
+          type: 'POST',
+          url: "libs/php/insertLocation.php",
+          data: {
+            name: $("#addNewLocation").val(),
+          },
+          dataType: 'json',
+          success: function(results) {
+            $("#locBody").html(""); 
+            getAllLocation();
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+              console.log(errorThrown);
+          }
+      }) 
+      }
     },
     error: function(jqXHR, textStatus, errorThrown) {
         console.log(errorThrown);
     }
 }) 
+ 
 });
+
 
 
 // ***************************** Delete Location************************************
@@ -892,30 +902,4 @@ $("#deleteLocation").click(function(){
                 console.log(errorThrown);
             }
           });
-        })
-
-// Remove Duplicate 
-$(document).ready(function(){
-  $('#addNewLocation').keyup(function(e){
-    let newLocation = $('#addNewLocation').val();
-    console.log(newLocation);
-
-    $.ajax({
-      type: 'POST',
-      url: "libs/php/remove_duplicate_location.php",
-      data: {
-        // id: $(this).data('id'),
-        data: {locationID},
-      // locationID: $("#addLocationId").val(),
-      },
-      dataType: 'json',
-      success: function(results) {
-        console.log(results)
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-          console.log(errorThrown);
-      }
-  }) 
-
-  });
-});
+        });
